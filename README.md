@@ -1,4 +1,4 @@
-﻿# 📊 Data Structures & Algorithms — Ocean Temperature Dataset
+# 📊 Data Structures & Algorithms — Ocean Temperature Dataset
 
 > A C-language academic project implementing **sorting algorithms**, **search algorithms**, **AVL trees**, and **hash tables** on real oceanographic measurement data, coupled with a **Python Machine Learning Time Series Pipeline** for ocean temperature forecasting.
 
@@ -340,5 +340,8 @@ gcc -o combined        part2/hash-table/avl_hash_combined.c        -lm
 ---
 
 ## 👤 Author
+
+**Filippos Paraskevas Zygouris** ([@FilippeZ](https://github.com/FilippeZ))  
 Academic Project — **Data Structures & Machine Learning**  
 Languages: **C (C99)** & **Python 3** | Dataset: Oceanographic Measurement Time-Series
+
