@@ -91,18 +91,66 @@ gb_model = GradientBoostingRegressor(n_estimators=100, random_state=42)
 gb_model.fit(X_train, y_train)
 ```
 
-### 📊 Empirical Pipeline Results:
+---
 
-| Model | Test MSE | Test RMSE | Test MAE | Test $R^2$ Score |
-|-------|----------|-----------|----------|------------------|
-| **Random Forest Regressor** | `8.1437` | `2.8537 °C` | `2.1201 °C` | `0.6427` |
-| **Gradient Boosting Regressor** | **`6.5868`** | **`2.5665 °C`** | **`1.8940 °C`** | **`0.7110`** |
+### 📊 Full Model Training & Evaluation Report
 
-**Feature Importance Breakdown (Random Forest):**
-- `phosphate` (current): **80.75%**
-- `temperature_lag_1` (t-1): **7.99%**
-- `phosphate_lag_1` (t-1): **3.77%**
-- `temperature_lag_3` (t-3): **2.32%**
+The ML models were trained and evaluated directly on the ocean dataset (1,405 records, 2000–2019). Below are the empirical results from execution:
+
+#### 1. Execution Terminal Output Log
+```text
+Loading dataset from: data\ocean.csv
+Dataset loaded: 1405 records from 2000-01-07 to 2019-11-18
+Train samples: 1121 | Test samples: 281
+
+--- Training Random Forest Regressor ---
+Random Forest Test MSE:  8.1437
+Random Forest Test RMSE: 2.8537
+Random Forest Test MAE:  2.1201
+Random Forest Test R2:   0.6427
+
+--- Training Gradient Boosting Regressor ---
+Gradient Boosting Test MSE:  6.5868
+Gradient Boosting Test RMSE: 2.5665
+Gradient Boosting Test MAE:  1.8940
+Gradient Boosting Test R2:   0.7110
+
+--- Feature Importances (Random Forest) ---
+  phosphate           : 80.75%
+  temperature_lag_1   : 7.99%
+  phosphate_lag_1     : 3.77%
+  temperature_lag_2   : 1.71%
+  phosphate_lag_2     : 1.78%
+  temperature_lag_3   : 2.32%
+  phosphate_lag_3     : 1.68%
+```
+
+#### 2. Quantitative Model Evaluation Metrics Comparison
+
+| Metric | Random Forest | Gradient Boosting (XGBoost logic) | Optimal Target Direction | Description |
+|---|---|---|---|---|
+| **Mean Squared Error (MSE)** | `8.1437` | **`6.5868`** | Lower is better | Average squared prediction error ($\text{°C}^2$) |
+| **Root Mean Squared Error (RMSE)** | `2.8537 °C` | **`2.5665 °C`** | Lower is better | Standard deviation of prediction residuals ($\text{°C}$) |
+| **Mean Absolute Error (MAE)** | `2.1201 °C` | **`1.8940 °C`** | Lower is better | Mean magnitude of absolute errors ($\text{°C}$) |
+| **$R^2$ Score (Variance Explained)** | `0.6427` | **`0.7110`** | Closer to 1.0 is better | Proportion of variance in temperature explained |
+
+#### 3. Feature Importance Analysis
+
+| Feature Name | Feature Type | Importance (%) | Interpretation |
+|---|---|---|---|
+| `phosphate` | Target-correlated Feature | **80.75%** | Current phosphate concentration strongly inverse-correlates with ocean temperature |
+| `temperature_lag_1` ($t-1$) | Historical Lag Feature | **7.99%** | Immediate preceding temperature reading |
+| `phosphate_lag_1` ($t-1$) | Historical Lag Feature | **3.77%** | Preceding phosphate reading |
+| `temperature_lag_3` ($t-3$) | Historical Lag Feature | **2.32%** | Temperature reading from 3 steps back |
+| `phosphate_lag_2` ($t-2$) | Historical Lag Feature | **1.78%** | Phosphate reading from 2 steps back |
+| `temperature_lag_2` ($t-2$) | Historical Lag Feature | **1.71%** | Temperature reading from 2 steps back |
+| `phosphate_lag_3` ($t-3$) | Historical Lag Feature | **1.68%** | Phosphate reading from 3 steps back |
+
+#### 4. Model Performance Interpretation & Key Insights
+- **Gradient Boosting Supremacy:** Gradient Boosting outperformed Random Forest ($R^2 = 0.7110$ vs $0.6427$, RMSE $2.5665^\circ\text{C}$ vs $2.8537^\circ\text{C}$). Sequential boosting refines residual errors at each step, making it superior for non-linear time series trends.
+- **Multivariate Correlation:** Phosphate level (`phosphate`) accounts for **80.75%** of predictive power due to the biochemical inverse relationship between ocean surface temperature and dissolved nutrients (upwelling brings cold, phosphate-rich water).
+- **Time-Series Integrity:** Using an 80/20 sequential split guarantees that the model learns purely from past measurements to predict future values, strictly preventing look-ahead data leakage.
+
 
 ---
 
@@ -153,6 +201,7 @@ The dataset contains **1,406 real oceanographic measurements**.
 | `temperature` | float | Sea surface temperature in °C | ~0.0 – 30.0 °C |
 | `phosphate` | float | Phosphate concentration in μmol/L | ~0.0 – 3.0 μmol/L |
 
+---
 
 ## 🔢 Part 1 — Sorting & Searching Algorithms (C Core)
 
